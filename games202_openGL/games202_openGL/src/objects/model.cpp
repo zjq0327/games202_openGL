@@ -13,6 +13,7 @@ unsigned int TextureFromFile(const char* path, const string& directory);
 Model::Model(const string& path)
 {
     loadModel(path);
+    isTexture = true;
 }
 
 int Model::getMeshCount()

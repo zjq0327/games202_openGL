@@ -22,6 +22,9 @@ public:
     // 防止上下文中纹理对象重复加载
     vector<Texture> textures_loaded;;
 
+    bool isTexture;
+
+
     Model(const string& path); // 构造函数 传入指定文件path 调动内部函数构造
 
     void draw(const Shader& shader); // 渲染启动接口，渲染内部所有的meshes，需要传递一个管线类进去

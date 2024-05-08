@@ -12,16 +12,19 @@ public:
     // 材质
     Material material;
     // 强度
-    glm::vec3 intensity;
+    float intensity;
     // 位置
     glm::vec3 position;
 
-    Light(glm::vec3 _intensity, glm::vec3 _position); // 构造函数 传入强度和位置
+    glm::vec3 color;
+
+    Light(float _intensity, glm::vec3 _position, glm::vec3 _color); // 构造函数 传入强度和位置
 
     void draw(const Shader& pipeline); // 渲染启动
 
-    glm::vec3 getIntensity(); // 获得成员接口
+    float getIntensity(); // 获得成员接口
     glm::vec3 getPosition();
 
+    void setPosition(const glm::vec3& _position); // 设置新位置
 
 };

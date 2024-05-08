@@ -1,35 +1,37 @@
 #pragma once
 
 #include "core.h"
-#include<string>
-#include <assimp/scene.h>
+#include <vector>
+#include <iostream>
 
-class Shader {
-public:
-	Shader(const char* vertexPath, const char* fragmentPath);
-	~Shader();
-	
-	void begin();//��ʼʹ�õ�ǰShader
+using namespace std;
 
-	void end();//����ʹ�õ�ǰShader
+class Shader
+{
+    public:
+    // 上下文里的id
+    unsigned int id;
+    // 顶点属性名称数组
+    vector<string> attributeName;
+    // unifrom属性名称数组
+    vector<string> uniformName;
+    // 纹理属性名称数组
+    vector<string> textureName;
+
+    Shader(); // 根据GLSL文件 创建着色器 设置一个默认构造函数
+    Shader(const string &path, int _type); 
+
+    // 设置数组
+    void setAttributeName(const vector<string> &_attributeName);
+    void setUniformName(const vector<string> &_unifromName);
+    void setTextureName(const vector<string> &_textureName);
+
+    // 得到变量
+    unsigned int getId();
+    vector<string> getAttributeName();
+    vector<string> getUniformName();
+    vector<string> getTextureName();
 
 
-
-	// uniform functions
-	void setBool(const std::string& name, bool value);
-	void setInt(const std::string& name, int value);
-	void setFloat(const std::string& name, float value);
-	void set3Float(const std::string& name, float v1, float v2, float v3);
-	void set3Float(const std::string& name, glm::vec3 v);
-	void set4Float(const std::string& name, float v1, float v2, float v3, float v4);
-	void set4Float(const std::string& name, aiColor4D color);
-	void set4Float(const std::string& name, glm::vec4 v);
-	void setMat4(const std::string& name, glm::mat4 val);
-
-private:
-
-	void checkShaderErrors(GLuint target,std::string type);
-
-private:
-	GLuint mProgram{ 0 };
 };
+

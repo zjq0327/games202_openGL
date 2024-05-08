@@ -18,5 +18,5 @@ private:
 
 private:
 	float mPitch{ 0.0f };
-	float mSpeed{ 0.001f };
+	float mSpeed{ 0.1f };
 };

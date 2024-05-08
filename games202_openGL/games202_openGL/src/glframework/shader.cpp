@@ -1,149 +1,80 @@
-#include"shader.h"
+#include "shader.h"
+#include <fstream>
+#include <sstream>
 
-#include<string>
-#include<fstream>
-#include<sstream>
-#include<iostream>
-
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-	//ÉùÃ÷×°Èëshader´úÂë×Ö·û´®µÄÁ½¸östring
-	std::string vertexCode;
-	std::string fragmentCode;
-
-	//ÉùÃ÷ÓÃÓÚ¶ÁÈ¡vs¸úfsÎÄ¼şµÄinFileStream
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
-
-	//±£Ö¤ifstreamÓöµ½ÎÊÌâµÄÊ±ºò¿ÉÒÔÅ×³öÒì³£
-	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	try {
-		//1 ´ò¿ªÎÄ¼ş
-		vShaderFile.open(vertexPath);
-		fShaderFile.open(fragmentPath);
-		
-		//2 ½«ÎÄ¼şÊäÈëÁ÷µ±ÖĞµÄ×Ö·û´®ÊäÈëµ½stringStreamÀïÃæ
-		std::stringstream vShaderStream, fShaderStream;
-		vShaderStream << vShaderFile.rdbuf();
-		fShaderStream << fShaderFile.rdbuf();
-
-		//3 ¹Ø±ÕÎÄ¼ş
-		vShaderFile.close();
-		fShaderFile.close();
-
-		//4 ½«×Ö·û´®´ÓstringStreamµ±ÖĞ¶ÁÈ¡³öÀ´£¬×ª»¯µ½code Stringµ±ÖĞ
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
-	}
-	catch (std::ifstream::failure& e) {
-		std::cout << "ERROR: Shader File Error: " << e.what() << std::endl;
-	}
-
-	const char* vertexShaderSource = vertexCode.c_str();
-	const char* fragmentShaderSource = fragmentCode.c_str();
-	//1 ´´½¨Shader³ÌĞò£¨vs¡¢fs£©
-	GLuint vertex, fragment;
-	vertex = glCreateShader(GL_VERTEX_SHADER);
-	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-
-	//2 Îªshader³ÌĞòÊäÈëshader´úÂë
-	glShaderSource(vertex, 1, &vertexShaderSource, NULL);
-	glShaderSource(fragment, 1, &fragmentShaderSource, NULL);
-
-	//3 Ö´ĞĞshader´úÂë±àÒë 
-	glCompileShader(vertex);
-	//¼ì²évertex±àÒë½á¹û
-	checkShaderErrors(vertex, "COMPILE");
-	
-	glCompileShader(fragment);
-	//¼ì²éfragment±àÒë½á¹û
-	checkShaderErrors(fragment, "COMPILE");
-	
-	//4 ´´½¨Ò»¸öProgram¿Ç×Ó
-	mProgram = glCreateProgram();
-
-	//6 ½«vsÓëfs±àÒëºÃµÄ½á¹û·Åµ½programÕâ¸ö¿Ç×ÓÀï
-	glAttachShader(mProgram, vertex);
-	glAttachShader(mProgram, fragment);
-
-	//7 Ö´ĞĞprogramµÄÁ´½Ó²Ù×÷£¬ĞÎ³É×îÖÕ¿ÉÖ´ĞĞshader³ÌĞò
-	glLinkProgram(mProgram);
-
-	//¼ì²éÁ´½Ó´íÎó
-	checkShaderErrors(mProgram, "LINK");
-
-	//ÇåÀí
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+Shader::Shader()
+{
+    // é»˜è®¤æ„é€ 
 }
-Shader::~Shader() {
+
+Shader::Shader(const string &path, int _type)
+{
+    string code;
+    ifstream shaderFile;
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try{
+        shaderFile.open(path);
+        std::stringstream shaderStream;
+        shaderStream << shaderFile.rdbuf();
+        shaderFile.close();
+        code = shaderStream.str();
+    } catch (ifstream::failure& e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+    }
+    
+    const char *shaderCode = code.c_str();
+    unsigned int _id;
+    if (_type == 0)
+        _id = glCreateShader(GL_VERTEX_SHADER);
+    else
+        _id = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(_id, 1, &shaderCode, NULL);
+    glCompileShader(_id);
+    id = _id;
+
+    // æ‰“å°ç¼–è¯‘é”™è¯¯
+    int success;
+    char infoLog[512];
+    glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
+    if (!success){
+        glGetShaderInfoLog(_id, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
 }
 
-void Shader::begin() {
-	glUseProgram(mProgram);
+void Shader::setAttributeName(const vector<string> &_attributeName)
+{
+    attributeName = _attributeName;
 }
 
-void Shader::end() {
-	glUseProgram(0);
+void Shader::setUniformName(const vector<string> &_unifromName)
+{
+    uniformName = _unifromName;
 }
 
-void Shader::checkShaderErrors(GLuint target, std::string type) {
-	int success = 0;
-	char infoLog[1024];
-
-	if (type == "COMPILE") {
-		glGetShaderiv(target, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			glGetShaderInfoLog(target, 1024, NULL, infoLog);
-			std::cout << "Error: SHADER COMPILE ERROR" << "\n" << infoLog << std::endl;
-		}
-	}
-	else if (type == "LINK") {
-		glGetProgramiv(target, GL_LINK_STATUS, &success);
-		if (!success) {
-			glGetProgramInfoLog(target, 1024, NULL, infoLog);
-			std::cout << "Error: SHADER LINK ERROR " << "\n" << infoLog << std::endl;
-		}
-	}
-	else {
-		std::cout << "Error: Check shader errors Type is wrong" << std::endl;
-	}
+void Shader::setTextureName(const vector<string> &_textureName)
+{
+    textureName = _textureName;
 }
 
-
-void Shader::setBool(const std::string& name, bool value) {
-	glUniform1i(glGetUniformLocation(mProgram, name.c_str()), (int)value);
+unsigned int Shader::getId()
+{
+    return id;
 }
 
-void Shader::setInt(const std::string& name, int value) {
-	glUniform1i(glGetUniformLocation(mProgram, name.c_str()), value);
+vector<string> Shader::getAttributeName()
+{
+    return attributeName;
 }
 
-void Shader::setFloat(const std::string& name, float value) {
-	glUniform1f(glGetUniformLocation(mProgram, name.c_str()), value);
+vector<string> Shader::getUniformName()
+{
+    return uniformName;
 }
 
-void Shader::set3Float(const std::string& name, float v1, float v2, float v3) {
-	glUniform3f(glGetUniformLocation(mProgram, name.c_str()), v1, v2, v3);
+vector<string> Shader::getTextureName()
+{
+    return textureName;
 }
 
-void Shader::set3Float(const std::string& name, glm::vec3 v) {
-	glUniform3f(glGetUniformLocation(mProgram, name.c_str()), v.x, v.y, v.z);
-}
-
-void Shader::set4Float(const std::string& name, float v1, float v2, float v3, float v4) {
-	glUniform4f(glGetUniformLocation(mProgram, name.c_str()), v1, v2, v3, v4);
-}
-
-void Shader::set4Float(const std::string& name, aiColor4D color) {
-	glUniform4f(glGetUniformLocation(mProgram, name.c_str()), color.r, color.g, color.b, color.a);
-}
-
-void Shader::set4Float(const std::string& name, glm::vec4 v) {
-	glUniform4f(glGetUniformLocation(mProgram, name.c_str()), v.x, v.y, v.z, v.w);
-}
-
-void Shader::setMat4(const std::string& name, glm::mat4 val) {
-	glUniformMatrix4fv(glGetUniformLocation(mProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
-}

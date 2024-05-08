@@ -31,7 +31,7 @@ protected:
 	float mCurrentX = 0.0f, mCurrentY = 0.0f;
 
 	//3 敏感度
-	float mSensitivity = 0.2f;
+	float mSensitivity = 1.2f;
 
 	//4 记录键盘相关按键的按下状态
 	std::map<int, bool> mKeyMap;
@@ -40,5 +40,5 @@ protected:
 	Camera* mCamera = nullptr;
 
 	//6 记录相机缩放的速度
-	float mScaleSpeed = 0.2f;
+	float mScaleSpeed = 1.2f;
 };

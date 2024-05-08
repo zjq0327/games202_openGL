@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-#define app Application::getInstance()
+#define myapp Application::getInstance()
 
 class GLFWwindow;
 
