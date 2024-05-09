@@ -59,6 +59,16 @@ int main()
     string phongFShader_path = "assets/shaders/phongshaders/fragment.glsl";
 
     string model_path = "assets/models/mary/Marry.obj";
+    string floor_path = "assets/models/floor/floor.obj";
+
+
+    // 一些作业一的参数
+    glm::vec3 lightPos(0.f, 80.f, 80.f);
+    // glm::vec3 lightPos(6.5f, 40.f, 101.f);
+    glm::vec3 focalPoint(0.f, 0.f, 0.f);
+    glm::vec3 lightUp(0.f, 1.f, 0.f);
+    // glm::vec3 cameraPos(30.f, 30.f, 30.f);
+    glm::vec3 cameraPos(6.5f, 80.f, 101.f);
 
     // 创建pipelien
     // 光源pipe 需要先创建光源的两个shader
@@ -112,18 +122,24 @@ int main()
     vector<string> phong_textureNamesF = {
         "uSampler"
     };
-    //phongFShader.setUniformName(phong_unifromNamesF);
+    phongFShader.setUniformName(phong_unifromNamesF);
     phongFShader.setTextureName(phong_textureNamesF);
 
     // link program
     Pipeline phongPipe(phongVShader, phongFShader);
 
     SceneRender scene;
-    scene.addModel(model_path);
+    scene.addModel(model_path); // id 0
+    scene.addModel(model_path); // id 1
+    scene.addModel(floor_path); // id 2
 
-    scene.addLight(250, glm::vec3(50.f, 75.f, 50.f), glm::vec3(1.f, 1.f, 1.f));
+    scene.setObjectModelMatrix(0, glm::vec3(0), 0, glm::vec3(0, 0, 1), glm::vec3(20, 20, 20));
+    scene.setObjectModelMatrix(1, glm::vec3(40, 0, -40), 0, glm::vec3(0, 0, 1), glm::vec3(10, 10, 10));
+    scene.setObjectModelMatrix(2, glm::vec3(0, 0, -30), 0, glm::vec3(0, 0, 1), glm::vec3(4, 4, 4));
 
-    camera = new Camera(glm::vec3(-20.f, 150.f, 250.f), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+    scene.addLight(250, lightPos, glm::vec3(1.f, 1.f, 1.f));
+
+    camera = new Camera(cameraPos, focalPoint, lightUp);
 
     cameraControl = new GameCameraControl();
     cameraControl->setCamera(camera);
@@ -131,9 +147,7 @@ int main()
 
     scene.addCamera(camera);
 
-    // 调整一下相机的位置
-    scene.camera->translateToTarget(80);
-    scene.camera->translatetToUp(70);
+
 
     unsigned int lightPipe_id = scene.addPipeline(lightPipe);
     unsigned int phongPipe_id = scene.addPipeline(phongPipe);
@@ -167,8 +181,7 @@ int main()
         cameraControl->update();
 
         // 绘制
-        scene.draw(lightPipe_id, phongPipe_id);
-
+        scene.draw_1(lightPipe_id, phongPipe_id);
     }
 
     glfwTerminate();

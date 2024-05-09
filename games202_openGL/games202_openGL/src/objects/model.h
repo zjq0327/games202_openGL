@@ -23,7 +23,8 @@ public:
     vector<Texture> textures_loaded;;
 
     bool isTexture;
-
+    // 该物体特殊的model变换
+    glm::mat4 modelMatirx;
 
     Model(const string& path); // 构造函数 传入指定文件path 调动内部函数构造
 
@@ -32,6 +33,9 @@ public:
     int getMeshCount(); // 得到Mesh的数量
 
     int getMaterialCount(); // 得到材质的数量
+
+
+    void setModelMatrix(const glm::mat4& _modelMatrix);
 
 private:
     void loadModel(const string& path); // 内部函数，用于完成模型数据到内部成员转化 调用assimp库实现,返回bool确定是否导入成功

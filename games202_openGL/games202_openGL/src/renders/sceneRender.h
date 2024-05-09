@@ -31,6 +31,10 @@ class SceneRender
     unsigned int addPipeline(const Pipeline &_pipelien); // 直接赋值传入一个管线 管线不像场景 存在通用的可能性
 
 
+    void setObjectModelMatrix(unsigned int model_id, const glm::vec3& _translate, float _r, const glm::vec3& _rotate, const glm::vec3& _scale); // 给指定的物体 传递M变换矩阵，目前暂时不包括旋转
+
+
+
     // 辅助函数
     glm::mat4 getModelMatrix(const glm::vec3 &_translate, float _r, const glm::vec3 &_rotate, const glm::vec3 &_scale); // 得到m变换矩阵
     glm::mat4 getViewMatrix(unsigned int camera_id); // 得到v变换矩阵
@@ -42,13 +46,15 @@ class SceneRender
 
 
     // 渲染启动接口
-    void draw(unsigned int light_pipe_id, unsigned int Phong_pipe_id); 
+    void draw_0(unsigned int light_pipe_id, unsigned int Phong_pipe_id);
+    void draw_1(unsigned int light_pipe_id, unsigned int Phong_pipe_id);
 
-    private:
+private:
 
     void modelRendering(unsigned int model_id, unsigned int pipeline_id); // 渲染一个model 直接指定数组序号就行
-    void lightRendering(unsigned int light_id, unsigned int pipeline_id); // 同理 渲染一个光源
+    void modelRendering_1(unsigned int model_id, unsigned int pipeline_id); // 调用自己的model变换矩阵来渲染
 
+    void lightRendering(unsigned int light_id, unsigned int pipeline_id); // 同理 渲染一个光源
 };
 
 #endif

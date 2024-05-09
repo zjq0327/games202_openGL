@@ -37,6 +37,9 @@ public:
     void addTexture(const Texture& _texture); // 传入该材质纹理
     void setTextures(const vector<Texture>& _textures); // 直接赋值
 
+    bool isTexture();
+
+
     // 获取纹理参数接口
     Type getType();
     bool getPhongPara(glm::vec3& _ka, glm::vec3& _kd, glm::vec3& _ks); // 判断参数是否更新 默认构造函数的时候 我会全部赋值成0

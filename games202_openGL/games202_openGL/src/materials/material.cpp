@@ -26,6 +26,14 @@ void Material::setTextures(const vector<Texture>& _textures)
     textures = _textures;
 }
 
+bool Material::isTexture()
+{
+    if (textures.size()) {
+        return true;
+    }
+    return false;
+}
+
 Type Material::getType()
 {
     return type;

@@ -47,52 +47,93 @@ bool Pipeline::judgeNameIn(const string &_name, const string &_type)
 
 void Pipeline::setInt(const std::string &name, int value)
 {
-    glUniform1i(glGetUniformLocation(id, name.c_str()), value); 
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+
+    glUniform1i(location, value);
 }
 
 void Pipeline::setFloat(const std::string &name, float value)
 {
-    glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform1f(location, value);
 }
 
 void Pipeline::setVec2(const std::string &name, const glm::vec2 &value)
 {
-    glUniform2fv(glGetUniformLocation(id, name.c_str()), 1, &value[0]); 
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform2fv(location, 1, &value[0]);
 }
 
 void Pipeline::setVec2(const std::string &name, float x, float y)
 {
-    glUniform2f(glGetUniformLocation(id, name.c_str()), x, y); 
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform2f(location, x, y);
 }
 
 void Pipeline::setVec3(const std::string &name, const glm::vec3 &value)
 {
-    glUniform3fv(glGetUniformLocation(id, name.c_str()), 1, &value[0]);
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform3fv(location, 1, &value[0]);
 }
 
 void Pipeline::setVec3(const std::string &name, float x, float y, float z)
 {
-    glUniform3f(glGetUniformLocation(id, name.c_str()), x, y, z);
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform3f(location, x, y, z);
 }
 
 void Pipeline::setVec4(const std::string &name, const glm::vec4 &value)
 {
-    glUniform4fv(glGetUniformLocation(id, name.c_str()), 1, &value[0]); 
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform4fv(location, 1, &value[0]);
 }
 
 void Pipeline::setVec4(const std::string &name, float x, float y, float z, float w)
 {
-    glUniform4f(glGetUniformLocation(id, name.c_str()), x, y, z, w); 
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniform4f(location, x, y, z, w);
 }
 
 void Pipeline::setMat3(const std::string &name, const glm::mat3 &mat)
 {
-    glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniformMatrix3fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
 void Pipeline::setMat4(const std::string &name, const glm::mat4 &mat)
 {
-    glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    GLint location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) {
+        std::cerr << "Error: Uniform variable '" << name.c_str() << "' not found in shader." << std::endl;
+    }
+    glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
 unsigned int Pipeline::setVAO(const unsigned int &VBO, const unsigned int &EBO)

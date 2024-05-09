@@ -57,8 +57,8 @@ void MeshRender::bindUnifrom_lightPos(const glm::vec3 &_position)
 
 void MeshRender::bindUniform_material(const Material &_material)
 {
-   pipeline.setVec3("ukd", _material.kd);
-   pipeline.setVec3("uks", _material.ks);
+   pipeline.setVec3("uKd", _material.kd);
+   pipeline.setVec3("uKs", _material.ks);
 }
 
 void MeshRender::bindTexture(const Material &_material)

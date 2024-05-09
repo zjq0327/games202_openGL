@@ -31,6 +31,11 @@ unsigned int SceneRender::addPipeline(const Pipeline &_pipelien)
     return pipelines.size()-1;
 }
 
+void SceneRender::setObjectModelMatrix(unsigned int model_id, const glm::vec3& _translate, float _r, const glm::vec3& _rotate, const glm::vec3& _scale)
+{
+    models[model_id].setModelMatrix(getModelMatrix(_translate, _r, _rotate, _scale));
+}
+
 glm::mat4 SceneRender::getModelMatrix(const glm::vec3 &_translate, float _r, const glm::vec3 &_rotate, const glm::vec3 &_scale)
 {
     glm::mat4 _result(1.0f);
@@ -73,7 +78,7 @@ void SceneRender::setProjectionMatrix(const glm::mat4 &_m)
     projectionMatrix = _m;
 }
 
-void SceneRender::draw(unsigned int light_pipe_id, unsigned int Phong_pipe_id)
+void SceneRender::draw_0(unsigned int light_pipe_id, unsigned int Phong_pipe_id)
 {
     // 启动深度缓冲
     glEnable(GL_DEPTH_TEST);
@@ -84,6 +89,55 @@ void SceneRender::draw(unsigned int light_pipe_id, unsigned int Phong_pipe_id)
     // 遍历model 渲染model
     for (int i=0; i<models.size(); i++){
         modelRendering(i, Phong_pipe_id);
+    }
+}
+
+void SceneRender::draw_1(unsigned int light_pipe_id, unsigned int Phong_pipe_id)
+{
+    // 启动深度缓冲
+    glEnable(GL_DEPTH_TEST);
+    // 遍历光源 渲染光源
+    for (int i = 0; i < lights.size(); i++) {
+        lightRendering(i, light_pipe_id);
+    }
+    // 遍历model 渲染model
+    for (int i = 0; i < models.size(); i++) {
+        modelRendering_1(i, Phong_pipe_id);
+    }
+}
+void SceneRender::modelRendering_1(unsigned int model_id, unsigned int pipeline_id)
+{
+    for (Mesh mesh : models[model_id].meshes) {
+        // 以mesh为基础渲染
+        MeshRender meshRender(pipelines[pipeline_id]);
+        Material material = models[model_id].materials[mesh.getMeshToMateria()];
+
+        // 加载数据到缓冲区
+        meshRender.setBufferData(mesh);
+        // 设置当前program
+        meshRender.use();
+        // 绑定顶点数据到着色器
+        meshRender.bindAttributeData();
+        // 绑定各种unifrom数据
+        meshRender.bindUniform_mvp(models[model_id].modelMatirx, viewMatrix, projectionMatrix); // MVP
+        meshRender.bindUniform_camera(*camera); // 相机 默认首位相机
+        meshRender.bindUniform_light(lights); // 目前 meshRender还只赋值一个光源属性
+        meshRender.bindUniform_material(material); // 材质属性
+        // 绑定贴图纹理数据
+        if (material.isTexture()) {
+            meshRender.bindTextureSample(1);
+            meshRender.bindTexture(material);
+        }
+        else {
+            meshRender.bindTextureSample(0);
+        }
+
+
+        // 启动绘制
+        meshRender.draw();
+
+        // 释放资源
+        meshRender.freeData();
     }
 }
 

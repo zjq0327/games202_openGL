@@ -129,7 +129,8 @@ unsigned int Model::processMaterial(aiMesh* _mesh, const aiScene* _scene)
 
     // 获取三个参数
     glm::vec3 _ka, _kd, _ks;
-    glm::vec3 color;
+
+    aiColor3D color;
     aiMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color);
     _ka = glm::vec3(color.r, color.g, color.b);
     aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
@@ -248,4 +249,9 @@ void Model::draw(const Shader& shader)
     {
         meshes[i].draw(shader);
     }
+}
+
+void Model::setModelMatrix(const glm::mat4& _modelMatrix)
+{
+    modelMatirx = _modelMatrix;
 }
