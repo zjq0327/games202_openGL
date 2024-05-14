@@ -166,7 +166,7 @@ unsigned int Pipeline::setVAO(const unsigned int &VBO, const unsigned int &EBO)
     return VAO;
 }
 
-void Pipeline::setTexture(const string &_type, unsigned int id)
+void Pipeline::setTexture(const string &_type, unsigned int _id)
 {
     // 目前 我这里也只有漫反射贴图
     // 由于目前 只有一张图片 这里暂时改成0 以免后面debug半天
@@ -184,8 +184,17 @@ void Pipeline::setTexture(const string &_type, unsigned int id)
         // 或者在shader里 直接保存不同类型贴图的集合 这样管理起来会非常方便
         // 同时当前贴图序号也根据此情况设置多个
         // glUniform1i(glGetUniformLocation(id, textureName[0].c_str()), texture_id);
+        glBindTexture(GL_TEXTURE_2D, _id);
         glUniform1i(glGetUniformLocation(id, textureName[0].c_str()), 0);
     }
 
     texture_id++;
+}
+
+void Pipeline::setShadowMap(unsigned int _id)
+{
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, _id); // 将当前纹理对象，绑定到纹理状态区域去
+    string shadowName = "uShadowMap";
+    glUniform1i(glGetUniformLocation(id, shadowName.c_str()), 0);
 }

@@ -52,6 +52,14 @@ void LightRender::bindUniform_mvp(const glm::mat4 &model, const glm::mat4 &view,
     pipeline.setMat4("uProjectionMatrix", projection);
 }
 
+void LightRender::bindUniform_mvpp(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection)
+{
+    pipeline.setMat4("uModelMatrix", model);
+    pipeline.setMat4("uViewMatrix", view);
+    pipeline.setMat4("uProjectionMatrix", projection);
+}
+
+
 void LightRender::bindUniform_light(const Light &light)
 {
     pipeline.setVec3("uLightColor", light.color);

@@ -53,6 +53,8 @@ void GameCameraControl::update() {
 	auto front = glm::cross(mCamera->up, mCamera->right);
 	auto right = mCamera->right;
 
+
+
 	if (mKeyMap[GLFW_KEY_W]) {
 		direction += front;
 	}

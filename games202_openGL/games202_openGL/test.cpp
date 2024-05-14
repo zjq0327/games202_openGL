@@ -41,39 +41,9 @@ void OnScroll(double offset) {
     cameraControl->onScroll(offset);
 }
 
-int main()
+
+Pipeline getLightPipeline(string lightVShader_path, string lightFShader_path)
 {
-    myapp->init();
-
-    myapp->setResizeCallback(OnResize);
-    myapp->setKeyBoardCallback(OnKey);
-    myapp->setMouseCallback(OnMouse);
-    myapp->setCursorCallback(OnCursor);
-    myapp->setScrollCallback(OnScroll);
-    // 主程序流程
-
-    string lightVShader_path = "assets/shaders/lightshaders/vertex.glsl";
-    string lightFShader_path = "assets/shaders/lightshaders/fragment.glsl";
-
-    string phongVShader_path = "assets/shaders/phongshaders/vertex.glsl";
-    string phongFShader_path = "assets/shaders/phongshaders/fragment.glsl";
-
-    string model_path = "assets/models/mary/Marry.obj";
-    string floor_path = "assets/models/floor/floor.obj";
-
-
-    // 一些作业一的参数
-    glm::vec3 lightPos(0.f, 80.f, 80.f);
-    // glm::vec3 lightPos(6.5f, 40.f, 101.f);
-    glm::vec3 focalPoint(0.f, 0.f, 0.f);
-    glm::vec3 lightUp(0.f, 1.f, 0.f);
-    // glm::vec3 cameraPos(30.f, 30.f, 30.f);
-    glm::vec3 cameraPos(6.5f, 80.f, 101.f);
-
-    // 创建pipelien
-    // 光源pipe 需要先创建光源的两个shader
-    // 目前名称数组并没有真正的体现用途 后面要尝试通过名称数组绑定各种unifrom的话 需要完成类型设置
-    // 感觉要从vector换成mat 这只是想法 实现起来还需要具体设计 变量名称规则需要统一
     Shader lightVShader(lightVShader_path, 0);
     vector<string> light_attriNamesV = {
         "aVertexPosition"
@@ -94,8 +64,11 @@ int main()
 
     // link program
     Pipeline lightPipe(lightVShader, lightFShader);
+    return lightPipe;
+}
 
-
+Pipeline getPhongPipeline(string phongVShader_path, string phongFShader_path)
+{
     // Phong pipe
     Shader phongVShader(phongVShader_path, 0);
     vector<string> phong_attriNamesV = {
@@ -127,6 +100,49 @@ int main()
 
     // link program
     Pipeline phongPipe(phongVShader, phongFShader);
+    return phongPipe;
+}
+
+
+int main()
+{
+    myapp->init();
+
+    myapp->setResizeCallback(OnResize);
+    myapp->setKeyBoardCallback(OnKey);
+    myapp->setMouseCallback(OnMouse);
+    myapp->setCursorCallback(OnCursor);
+    myapp->setScrollCallback(OnScroll);
+    // 主程序流程
+
+    string lightVShader_path = "assets/shaders/work1/lightshader/lightCubeVertexShader.glsl";
+    string lightFShader_path = "assets/shaders/work1/lightshader/lightCubeFragment.glsl";
+
+    string phongVShader_path = "assets/shaders/work1/phongShader/phongVertex.glsl";
+    string phongFShader_path = "assets/shaders/work1/phongShader/phongFragment.glsl";
+
+    string shadowVShader_path = "assets/shaders/work1/shadowShader/shadowVertex.glsl";
+    string shadowFShader_path = "assets/shaders/work1/shadowShader/shadowFragment.glsl";
+
+    string model_path = "assets/models/mary/Marry.obj";
+    string floor_path = "assets/models/floor/floor.obj";
+
+
+    // 一些作业一的参数
+    glm::vec3 lightPos(0.f, 80.f, 80.f);
+    // glm::vec3 lightPos(6.5f, 40.f, 101.f);
+    glm::vec3 focalPoint(0.f, 0.f, 0.f);
+    glm::vec3 lightUp(0.f, 1.f, 0.f);
+    // glm::vec3 cameraPos(30.f, 30.f, 30.f);
+    glm::vec3 cameraPos(6.5f, 80.f, 101.f);
+
+
+       // light pipe
+    Pipeline lightPipe = getLightPipeline(lightVShader_path, lightFShader_path);
+    // Phong pipe
+    Pipeline phongPipe = getPhongPipeline(phongVShader_path, phongFShader_path);
+    // shadow pipe
+    Pipeline shadowPipe = getPhongPipeline(shadowVShader_path, shadowFShader_path);
 
     SceneRender scene;
     scene.addModel(model_path); // id 0
@@ -137,7 +153,10 @@ int main()
     scene.setObjectModelMatrix(1, glm::vec3(40, 0, -40), 0, glm::vec3(0, 0, 1), glm::vec3(10, 10, 10));
     scene.setObjectModelMatrix(2, glm::vec3(0, 0, -30), 0, glm::vec3(0, 0, 1), glm::vec3(4, 4, 4));
 
-    scene.addLight(250, lightPos, glm::vec3(1.f, 1.f, 1.f));
+    //scene.addLight(250, lightPos, glm::vec3(1.f, 1.f, 1.f));
+
+    scene.addLight(100, lightPos, glm::vec3(1.f, 1.f, 1.f));
+    scene.lights[0].setTargetAndUp(focalPoint, lightUp);
 
     camera = new Camera(cameraPos, focalPoint, lightUp);
 
@@ -151,8 +170,12 @@ int main()
 
     unsigned int lightPipe_id = scene.addPipeline(lightPipe);
     unsigned int phongPipe_id = scene.addPipeline(phongPipe);
+    unsigned int shadowPipe_id = scene.addPipeline(shadowPipe);
 
     unsigned int n = 0;
+
+    // 创建帧缓冲
+    scene.addFrameBuffer(2048, 2048);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -167,21 +190,21 @@ int main()
 
         // 设置一下场景内全局MVP
         // 让光源动起来
-        float camX = sin(glfwGetTime() * 0.6 * 2) * 100;
+        /*float camX = sin(glfwGetTime() * 0.6 * 2) * 100;
         float camY = cos(glfwGetTime() * 0.4 * 2) * 150;
-        float camZ = cos(glfwGetTime() * 0.2 * 2) * 100;
-        scene.setModelMatrixLight(scene.getModelMatrix(glm::vec3(camX, camY, camZ), (float)glfwGetTime(), glm::vec3(0, 1, 0), glm::vec3(1, 1, 1)));
+        float camZ = cos(glfwGetTime() * 0.2 * 2) * 100;*/
+        scene.setModelMatrixLight(scene.getModelMatrix(lightPos, (float)glfwGetTime(), glm::vec3(0, 1, 0), glm::vec3(1, 1, 1)));
         scene.setModelMatrixModel(scene.getModelMatrix(glm::vec3(0, 0, 0), 0, glm::vec3(0, 0, 1), glm::vec3(52, 52, 52)));
         scene.setViewMatrix(scene.getViewMatrix(0));
-        scene.setProjectionMatrix(scene.getProjectionMatrix(60, myapp->getWidth() / myapp->getHeight(), 0.1, 1000));
+        scene.setProjectionMatrix(scene.getProjectionMatrix(75, myapp->getWidth() / myapp->getHeight(), 0.1, 1000));
 
         // 更新光源位置
-        scene.lights[0].setPosition(glm::vec3(camX, camY, camZ));
+        //scene.lights[0].setPosition(glm::vec3(camX, camY, camZ));
 
         cameraControl->update();
 
         // 绘制
-        scene.draw_1(lightPipe_id, phongPipe_id);
+        scene.draw_1(lightPipe_id, phongPipe_id, shadowPipe_id);
     }
 
     glfwTerminate();

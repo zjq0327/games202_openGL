@@ -27,6 +27,7 @@ class LightRender
     void bindAttributeData(); // 绑定顶点数据 与meshRender不一样 不调用管线类的接口 自己设置VAO
 
     void bindUniform_mvp(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection); // 绑定uniform mvp矩阵
+    void bindUniform_mvpp(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection); // 分别绑定三个矩阵
 
     void bindUniform_light(const Light &light); // 绑定光源类相关属性 只需要绑定着色器里的颜色变量
 

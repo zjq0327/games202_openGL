@@ -39,6 +39,20 @@ void MeshRender::bindUniform_mvp(const glm::mat4 &model, const glm::mat4 &view, 
     pipeline.setMat4("uProjectionMatrix", projection);
 }
 
+void MeshRender::bindUniform_mvpp(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection)
+{
+    pipeline.setMat4("uModelMatrix", model);
+    pipeline.setMat4("uViewMatrix", view);
+    pipeline.setMat4("uProjectionMatrix", projection);
+}
+
+
+void MeshRender::bindUniform_lightMvp(const glm::mat4& mvp)
+{
+    pipeline.setMat4("uLightMVP", mvp);
+}
+
+
 void MeshRender::bindUniform_camera(const Camera &camera)
 {
     pipeline.setVec3("uCameraPos", camera.position);
@@ -71,6 +85,11 @@ void MeshRender::bindTexture(const Material &_material)
 void MeshRender::bindTextureSample(const int &_t)
 {  
     pipeline.setInt("uTextureSample", _t);
+}
+
+void MeshRender::bindShadowMap(unsigned int _id)
+{
+    pipeline.setShadowMap(_id);
 }
 
 void MeshRender::use()

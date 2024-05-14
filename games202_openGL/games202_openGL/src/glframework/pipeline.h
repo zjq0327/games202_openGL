@@ -39,6 +39,7 @@ class Pipeline
 
     unsigned int setVAO(const unsigned int &VBO, const unsigned int &EBO); // attribute数据绑定接口
 
-    void setTexture(const string &_type, unsigned int id); // 纹理对象数据绑定接口 前面参数类型 后面参数对象上下文id
+    void setTexture(const string &_type, unsigned int _id); // 纹理对象数据绑定接口 前面参数类型 后面参数对象上下文id
+    void setShadowMap(unsigned int _id);
 
 };

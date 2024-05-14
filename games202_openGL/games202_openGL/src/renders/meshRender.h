@@ -28,6 +28,8 @@ class MeshRender
     void bindAttributeData(); // 绑定顶点数据
 
     void bindUniform_mvp(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection); // 绑定uniform mvp矩阵
+    void bindUniform_mvpp(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection); // 分别绑定三个矩阵
+    void bindUniform_lightMvp(const glm::mat4& mvp); // 绑定光源位置下的mvp矩阵 用于作业1 实现阴影
 
     void bindUniform_camera(const Camera &camera); // 绑定摄像机相关属性
 
@@ -37,6 +39,8 @@ class MeshRender
     void bindUniform_material(const Material &_material); // 绑定材质相关属性 默认是Phong材质的 后面也可以考虑加上PBR
 
     void bindTexture(const Material &_material); // 绑定贴图
+    void bindShadowMap(unsigned int _id); // 绑定shadowmap 用于作业1 实现阴影
+
 
     void bindTextureSample(const int &_t);
 
